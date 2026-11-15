@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1120" viewBox="0 0 1600 1120">
+<defs>
+  <style>
+    .bg{fill:#f7f8fa}.title{font:700 34px Arial,sans-serif;fill:#182536}.sub{font:16px Arial,sans-serif;fill:#5c6877}
+    .layer{font:700 17px Arial,sans-serif;fill:#596778;letter-spacing:1px}
+    .box{stroke-width:2;rx:14;ry:14}.client{fill:#eaf1fb;stroke:#6b8dbb}.edge{fill:#edf2f7;stroke:#8295aa}
+    .app{fill:#eaf5ef;stroke:#6c9d82}.bus{fill:#fff3df;stroke:#c59a4d}.data{fill:#f1edfa;stroke:#8e7ab7}
+    .ops{fill:#eef0f2;stroke:#9aa4af}
+    .h{font:700 19px Arial,sans-serif;fill:#1d2c3d}.t{font:15px Arial,sans-serif;fill:#425166}
+    .line{fill:none;stroke:#65758a;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+    .dash{stroke-dasharray:7 7}.arrow{fill:#65758a}
+  </style>
+  <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0 L10 5 L0 10 Z" class="arrow"/></marker>
+</defs>
+<rect class="bg" width="1600" height="1120"/>
+<text x="800" y="58" text-anchor="middle" class="title">Connect — архитектура мессенджера</text>
+<text x="800" y="88" text-anchor="middle" class="sub">Путь сообщения от клиента до получателя и систем хранения</text>
+
+<!-- layer labels -->
+<text x="70" y="145" class="layer">КЛИЕНТЫ И ВХОДНОЙ ТРАФИК</text>
+<text x="70" y="340" class="layer">ПРИКЛАДНЫЕ СЕРВИСЫ</text>
+<text x="70" y="650" class="layer">СОБЫТИЯ</text>
+<text x="70" y="835" class="layer">ХРАНЕНИЕ И ПОИСК</text>
+
+<!-- top row -->
+<rect x="70" y="170" width="260" height="105" class="box client"/>
+<text x="200" y="210" text-anchor="middle" class="h">Клиенты</text><text x="200" y="240" text-anchor="middle" class="t">Мобильное приложение • Web</text>
+<rect x="455" y="170" width="260" height="105" class="box edge"/>
+<text x="585" y="210" text-anchor="middle" class="h">CDN / WAF</text><text x="585" y="240" text-anchor="middle" class="t">Защита • TLS • фильтрация</text>
+<rect x="840" y="170" width="260" height="105" class="box edge"/>
+<text x="970" y="210" text-anchor="middle" class="h">Балансировщик L7</text><text x="970" y="240" text-anchor="middle" class="t">HTTP • WebSocket • health checks</text>
+<rect x="1225" y="170" width="300" height="105" class="box edge"/>
+<text x="1375" y="210" text-anchor="middle" class="h">API Gateway</text><text x="1375" y="240" text-anchor="middle" class="t">Авторизация • лимиты • маршруты</text>
+
+<path d="M330 222 H455" class="line" marker-end="url(#arr)"/>
+<path d="M715 222 H840" class="line" marker-end="url(#arr)"/>
+<path d="M1100 222 H1225" class="line" marker-end="url(#arr)"/>
+
+<!-- services row -->
+<rect x="70" y="375" width="220" height="115" class="box app"/>
+<text x="180" y="416" text-anchor="middle" class="h">Auth</text><text x="180" y="447" text-anchor="middle" class="t">Вход • токены • сессии</text>
+<rect x="325" y="375" width="220" height="115" class="box app"/>
+<text x="435" y="416" text-anchor="middle" class="h">Chat</text><text x="435" y="447" text-anchor="middle" class="t">Чаты • участники • права</text>
+<rect x="580" y="375" width="220" height="115" class="box app"/>
+<text x="690" y="416" text-anchor="middle" class="h">Realtime Gateway</text><text x="690" y="447" text-anchor="middle" class="t">WebSocket • активные сессии</text>
+<rect x="835" y="375" width="220" height="115" class="box app"/>
+<text x="945" y="416" text-anchor="middle" class="h">Message</text><text x="945" y="447" text-anchor="middle" class="t">Проверка • запись • outbox</text>
+<rect x="1090" y="375" width="220" height="115" class="box app"/>
+<text x="1200" y="416" text-anchor="middle" class="h">Media</text><text x="1200" y="447" text-anchor="middle" class="t">Загрузка • ссылки на файлы</text>
+<rect x="1345" y="375" width="180" height="115" class="box app"/>
+<text x="1435" y="416" text-anchor="middle" class="h">Notify</text><text x="1435" y="447" text-anchor="middle" class="t">Push</text>
+
+<!-- gateway fan-out with clean bus -->
+<path d="M1375 275 V315 H180 V375" class="line" marker-end="url(#arr)"/>
+<path d="M1375 315 H435 V375" class="line" marker-end="url(#arr)"/>
+<path d="M1375 315 H690 V375" class="line" marker-end="url(#arr)"/>
+<path d="M1375 315 H945 V375" class="line" marker-end="url(#arr)"/>
+<path d="M1375 315 H1200 V375" class="line" marker-end="url(#arr)"/>
+
+<!-- event bus -->
+<rect x="500" y="690" width="600" height="95" class="box bus"/>
+<text x="800" y="730" text-anchor="middle" class="h">Apache Kafka</text>
+<text x="800" y="758" text-anchor="middle" class="t">message-events • delivery-events • notification-events</text>
+<path d="M945 490 V690" class="line" marker-end="url(#arr)"/>
+<text x="965" y="590" class="t">outbox relay</text>
+<path d="M690 490 V570 H500 V738" class="line" marker-end="url(#arr)"/>
+<text x="520" y="555" class="t">события доставки</text>
+<path d="M1435 490 V560 H1100 V738" class="line" marker-end="url(#arr)"/>
+<text x="1170" y="545" class="t">уведомления</text>
+
+<!-- data row -->
+<rect x="70" y="870" width="270" height="120" class="box data"/>
+<text x="205" y="912" text-anchor="middle" class="h">PostgreSQL</text><text x="205" y="943" text-anchor="middle" class="t">Пользователи • чаты • сообщения</text><text x="205" y="967" text-anchor="middle" class="t">Основной источник данных</text>
+<rect x="420" y="870" width="220" height="120" class="box data"/>
+<text x="530" y="912" text-anchor="middle" class="h">Redis</text><text x="530" y="943" text-anchor="middle" class="t">Presence • кэш • rate limit</text>
+<rect x="720" y="870" width="220" height="120" class="box data"/>
+<text x="830" y="912" text-anchor="middle" class="h">S3 / MinIO</text><text x="830" y="943" text-anchor="middle" class="t">Изображения • видео • файлы</text>
+<rect x="1020" y="870" width="220" height="120" class="box data"/>
+<text x="1130" y="912" text-anchor="middle" class="h">OpenSearch</text><text x="1130" y="943" text-anchor="middle" class="t">Поисковый индекс</text>
+<rect x="1320" y="870" width="205" height="120" class="box data"/>
+<text x="1422" y="912" text-anchor="middle" class="h">FCM / APNs</text><text x="1422" y="943" text-anchor="middle" class="t">Push-провайдеры</text>
+
+<!-- storage connectors -->
+<path d="M945 490 V530 H205 V870" class="line" marker-end="url(#arr)"/>
+<text x="220" y="555" class="t">SQL</text>
+<path d="M690 490 V870" class="line" marker-end="url(#arr)"/>
+<path d="M1200 490 V820 H830 V870" class="line" marker-end="url(#arr)"/>
+<path d="M800 785 V825 H1130 V870" class="line" marker-end="url(#arr)"/>
+<path d="M800 785 V815 H530 V870" class="line" marker-end="url(#arr)"/>
+<path d="M800 785 H1422 V870" class="line" marker-end="url(#arr)"/>
+
+<!-- operations footer -->
+<rect x="70" y="1030" width="1455" height="60" class="box ops"/>
+<text x="797" y="1067" text-anchor="middle" class="h">Мониторинг и эксплуатация: Prometheus • Grafana • Loki • OpenTelemetry • Alertmanager</text>
+<text x="800" y="1110" text-anchor="middle" class="sub">Стрелки показывают основные потоки; резервирование и реплики хранилищ описаны в README.</text>
+</svg>
