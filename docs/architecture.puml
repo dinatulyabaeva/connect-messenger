@@ -1,39 +1,65 @@
 @startuml
+title Connect — схема компонентов
 left to right direction
+skinparam shadowing false
 skinparam componentStyle rectangle
-actor "Mobile / Web clients" as Client
-component "DNS / CDN / WAF" as Edge
-component "L7 Load Balancer" as LB
-component "API Gateway" as GW
-component "Auth service" as Auth
-component "Chat service" as Chat
-component "Realtime Gateway\n(WebSocket)" as RT
-component "Message service" as Msg
-component "Media service" as Media
-component "Notification service" as Notif
-queue "Kafka" as Kafka
-database "PostgreSQL\n(source of truth)" as PG
-database "Redis\n(presence/cache)" as Redis
-cloud "S3 / MinIO" as S3
-database "OpenSearch\n(search index)" as OS
-cloud "FCM / APNs" as Push
-Client --> Edge : HTTPS / WSS
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+skinparam ArrowColor #526579
+skinparam packageStyle rectangle
+
+actor "Мобильный / веб-клиент" as Client
+cloud "Интернет" as Internet
+component "CDN / WAF" as Edge
+component "Балансировщик L7" as LB
+component "API Gateway" as Gateway
+
+package "Прикладные сервисы" {
+  component "Авторизация" as Auth
+  component "Чаты" as Chat
+  component "WebSocket Gateway" as WS
+  component "Сообщения" as Message
+  component "Файлы" as Media
+  component "Уведомления" as Notify
+}
+
+queue "Kafka\nсобытия" as Kafka
+
+package "Хранение" {
+  database "PostgreSQL\nосновные данные" as PG
+  database "Redis\npresence и кэш" as Redis
+  cloud "S3 / MinIO\nвложения" as S3
+  database "OpenSearch\nпоиск" as Search
+}
+
+component "FCM / APNs" as Push
+component "Мониторинг\nPrometheus • Grafana • Loki" as Monitor
+
+Client --> Internet
+Internet --> Edge
 Edge --> LB
-LB --> GW
-GW --> Auth
-GW --> Chat
-GW --> Msg
-GW --> RT
-GW --> Media
-Msg --> PG : transaction + outbox
-Msg --> Kafka : via outbox relay
-Chat --> PG
+LB --> Gateway
+Gateway --> Auth
+Gateway --> Chat
+Gateway --> WS
+Gateway --> Message
+Gateway --> Media
 Auth --> PG
-RT --> Redis
+Chat --> PG
+Message --> PG : запись + outbox
+Message --> Kafka : публикация outbox
+WS --> Redis : статусы и сессии
 Media --> S3
-Kafka --> RT : fan-out
-Kafka --> Notif
-Kafka --> OS : indexing
-Notif --> Push
-Kafka --> PG : delivery/read projections
+Kafka --> WS : доставка событий
+Kafka --> Notify
+Kafka --> Search : индексирование
+Notify --> Push
+Auth ..> Monitor
+Chat ..> Monitor
+WS ..> Monitor
+Message ..> Monitor
+Kafka ..> Monitor
+PG ..> Monitor
+Redis ..> Monitor
 @enduml
